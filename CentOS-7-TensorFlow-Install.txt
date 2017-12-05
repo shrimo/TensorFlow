@@ -1,0 +1,72 @@
+
+CentOS 7 TensorFlow install:
+######################################################
+   # Verify You Have a CUDA-Capable GPU:
+lspci | grep -i nvidia
+   # Verify Version of Linux:
+uname -m && cat /etc/*release
+   # Verify the System Has gcc Installed:
+gcc --version
+   # Verify the System Kernel Headers:
+uname -r
+
+######################################################
+   # Download And Install CUDA Toolkit 8.0 (Only 8.0)
+https://developer.nvidia.com/cuda-80-ga2-download-archive/       (Download Base Installer and cuBLAS Patch Update to CUDA 8)
+chmod 777 cuda_8.0.61_375.26_linux.run
+chmod 777 cuda_8.0.61.2_linux.run
+yum install kernel-devel-$(uname -r) kernel-headers-$(uname -r) gcc
+echo 'blacklist nouveau' >> /etc/modprobe.d/blacklist.conf
+dracut /boot/initramfs-$(uname -r).img $(uname -r) --force
+systemctl disable gdm
+reboot
+./ /home/username/Downloads/cuda_8.0.61_375.26_linux.run       (Install Graphic Driver and CUDA Toolkit and Symlolik link)
+systemctl enable gdm
+ln -s '/usr/lib/systemd/system/gdm.service' '/etc/systemd/system/display-manager.service
+reboot
+
+######################################################
+   # Download And Install cuDNN (CUDA Deep Neural Networks):
+https://developer.nvidia.com/rdp/cudnn-download                (Download the cuDNN v5.1 (Jan 20, 2017), for CUDA 8.0 For Linux)
+tar xvzf cudnn-8.0-linux-x64-v5.1.tgz
+cp -P cuda/include/cudnn.h /usr/local/cuda/include
+cp -P cuda/lib64/libcudnn* /usr/local/cuda/lib64
+chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+
+######################################################
+   # Download And Install Docker:
+https://download.docker.com/linux/centos/7/x86_64/stable/Packages/       (Download the docker-ce-17.09.0.ce-1.el7.centos.x86_64.rpm)
+rpm -i --force docker-ce-17.09.0.ce-1.el7.centos.x86_64.rpm
+
+######################################################
+   # Download And Install NVIDIA Docker:
+wget -P /tmp https://github.com/NVIDIA/nvidia-docker/releases/download/v1.0.1/nvidia-docker-1.0.1-1.x86_64.rpm
+
+######################################################
+   # Install openCV:
+yum install numpy opencv*
+
+######################################################
+
+   # Install Scientific Tools for Python:
+yum install scipy.x86_64
+
+sudo pip install http://effbot.org/media/downloads/Imaging-1.1.7.tar.gz
+ 
+######################################################
+  # Set Evironment Variables for cuDNN (CUDA Deep Neural Networks):
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda
+
+#####################################################
+   # Check TensorFlow from the Command Line
+python
+import tensorflow as tf
+hello = tf.constant('Hello, TensorFlow!')
+sess = tf.Session()
+print(sess.run(hello))
+a = tf.constant(10)
+b = tf.constant(32)
+print(sess.run(a + b))
+
+#####################################################

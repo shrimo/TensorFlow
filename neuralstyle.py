@@ -168,13 +168,14 @@ def main():
 
   if not os.path.exists(OUTOUT_DIR):
       os.mkdir(OUTOUT_DIR)
-
+  j=1
   for i in range(ITERATION):
     sess.run(train)
     if i%100 ==0:
       result_img = sess.run(net['input'])
       print sess.run(cost_total)
-      write_image(os.path.join(OUTOUT_DIR,'_000%s.png'%(str(i).zfill(1))),result_img)
+      write_image(os.path.join(OUTOUT_DIR,'out_%s.png'%(str(j).zfill(4))),result_img)
+      j += 1
   
   write_image(os.path.join(OUTOUT_DIR,OUTPUT_IMG),result_img)
   

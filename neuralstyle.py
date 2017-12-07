@@ -173,7 +173,9 @@ def main():
     sess.run(train)
     if i%100 ==0:
       result_img = sess.run(net['input'])
-      print sess.run(cost_total)
+      tfdata = sess.run(cost_total)
+      file_writer = tf.summary.FileWriter('out', sess.graph)
+      print tfdata
       write_image(os.path.join(OUTOUT_DIR,'out_%s.png'%(str(j).zfill(4))),result_img)
       j += 1
   
